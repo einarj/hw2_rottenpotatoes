@@ -9,22 +9,28 @@ class MoviesController < ApplicationController
   def index
 
     @all_ratings = Movie.all_ratings
-    ratings_filter = params[:ratings].keys unless params[:ratings].nil?
-    @ratings = params[:ratings] ? params[:ratings] : []
+
+    if params[:ratings]
+      ratings_filter = params[:ratings].keys
+      session[:ratings_filter] = ratings_filter
+    end
+    @ratings = session[:ratings_filter] ? session[:ratings_filter] : []
 
     @movies = Movie.all(:conditions => [
       "rating IN (:ratings)", {
-        :ratings => ratings_filter ? ratings_filter : @all_ratings
+        :ratings => @ratings ? @ratings : @all_ratings
       }
-    ])
+    ],
+      :order => params[:sort_by]
+    )
 
+    # Highlight the sort column
     if params[:sort_by]
       if params[:sort_by] == 'title'
         @title_class = 'hilite'
       elsif params[:sort_by] == 'release_date'
         @release_date_class = 'hilite'
       end
-      @movies = @movies.order(params[:sort_by])
     end
 
   end
