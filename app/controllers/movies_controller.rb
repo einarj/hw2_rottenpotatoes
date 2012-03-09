@@ -9,15 +9,12 @@ class MoviesController < ApplicationController
   def index
 
     @all_ratings = Movie.all_ratings
-    if params[:ratings].nil?
-      ratings_filter = @all_ratings
-    else
-     ratings_filter = params[:ratings].keys 
-    end
+    ratings_filter = params[:ratings].keys unless params[:ratings].nil?
+    @ratings = params[:ratings] ? params[:ratings] : []
 
     @movies = Movie.all(:conditions => [
       "rating IN (:ratings)", {
-        :ratings => ratings_filter
+        :ratings => ratings_filter ? ratings_filter : @all_ratings
       }
     ])
 
