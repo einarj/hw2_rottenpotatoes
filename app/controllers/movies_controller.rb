@@ -7,6 +7,16 @@ class MoviesController < ApplicationController
   end
 
   def index
+    # Highlight the sort column
+    if params[:sort_by]
+      if params[:sort_by] == 'title'
+        @title_class = 'hilite'
+      elsif params[:sort_by] == 'release_date'
+        @release_date_class = 'hilite'
+      end
+
+      session[:sort_by] = params[:sort_by]
+    end
 
     @all_ratings = Movie.all_ratings
 
@@ -21,17 +31,9 @@ class MoviesController < ApplicationController
         :ratings => @ratings ? @ratings : @all_ratings
       }
     ],
-      :order => params[:sort_by]
+      :order => session[:sort_by]
     )
 
-    # Highlight the sort column
-    if params[:sort_by]
-      if params[:sort_by] == 'title'
-        @title_class = 'hilite'
-      elsif params[:sort_by] == 'release_date'
-        @release_date_class = 'hilite'
-      end
-    end
 
   end
 
