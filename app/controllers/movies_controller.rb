@@ -11,7 +11,6 @@ class MoviesController < ApplicationController
       session[:sort_by] = 'id'
     end
 
-    debugger
     if params[:sort_by]
       session[:sort_by] = params[:sort_by]
     end
@@ -20,7 +19,6 @@ class MoviesController < ApplicationController
   end
 
   def ratings_filter
-    debugger
     if params[:ratings]
        session[:ratings_filter] = params[:ratings]
     end
@@ -29,8 +27,6 @@ class MoviesController < ApplicationController
   end
 
   def index
-    debugger
-
     sort_by()
     ratings_filter()
 
@@ -40,7 +36,6 @@ class MoviesController < ApplicationController
       red_map[:action] = "index"
       red_map[:sort_by] = session[:sort_by]
       red_map[:ratings] = session[:ratings_filter]
-      debugger
       redirect_to red_map
     end
 
