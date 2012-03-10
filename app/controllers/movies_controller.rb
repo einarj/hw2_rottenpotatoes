@@ -19,6 +19,7 @@ class MoviesController < ApplicationController
   end
 
   def ratings_filter
+
     if params[:ratings]
        session[:ratings_filter] = params[:ratings]
     end
@@ -31,7 +32,8 @@ class MoviesController < ApplicationController
     ratings_filter()
 
     # Restful redirect if needed
-    if params[:sort_by].nil? or params[:ratings].nil?
+    if ((params[:sort_by].nil? and session[:sort_by] != nil) or
+        (params[:ratings].nil? and session[:ratings_filter] != nil) )
       red_map = Hash.new
       red_map[:action] = "index"
       red_map[:sort_by] = session[:sort_by]
