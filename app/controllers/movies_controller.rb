@@ -6,51 +6,58 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
-  def index
+  def sort_by
+    if session[:sort_by].nil?
+      session[:sort_by] = 'id'
+    end
 
     debugger
+    if params[:sort_by]
+      session[:sort_by] = params[:sort_by]
+    end
+
+    session[:sort_by]
+  end
+
+  def ratings_filter
+    debugger
+    if params[:ratings]
+       session[:ratings_filter] = params[:ratings]
+    end
+
+    session[:ratings_filter]
+  end
+
+  def index
+    debugger
+
+    sort_by()
+    ratings_filter()
 
     # Restful redirect if needed
-    red_map = Hash.new
-    if params[:sort_by].nil? and session[:sort_by].nil? == false
-      red_map[:sort_by] = session[:sort_by]
-    end
-    #if params[:ratings].nil? and session[:ratings_filter].nil? == false and session[:ratings_filter].empty? == false
-    
-      #filt = session[:ratings_filter]
-      #filt_map = Hash[*filt.collect { |v| [v, '1'].flatten } ]
-      #red_map[:ratings] =  filt_map
-    #end
-
-    unless red_map.empty?
+    if params[:sort_by].nil? or params[:ratings].nil?
+      red_map = Hash.new
       red_map[:action] = "index"
+      red_map[:sort_by] = session[:sort_by]
+      red_map[:ratings] = session[:ratings_filter]
+      debugger
       redirect_to red_map
     end
 
     # Highlight the sort column
-    if params[:sort_by]
-      if params[:sort_by] == 'title'
-        @title_class = 'hilite'
-      elsif params[:sort_by] == 'release_date'
-        @release_date_class = 'hilite'
-      end
-
-      session[:sort_by] = params[:sort_by]
+    if params[:sort_by] == 'title'
+      @title_class = 'hilite'
+    elsif params[:sort_by] == 'release_date'
+      @release_date_class = 'hilite'
     end
 
     @all_ratings = Movie.all_ratings
 
-    if params[:ratings]
-      ratings_filter = params[:ratings].keys
-      session[:ratings_filter] = ratings_filter
-    end
-    @ratings = session[:ratings_filter] ? session[:ratings_filter] : []
+    @ratings = session[:ratings_filter] ? session[:ratings_filter].keys : []
     rate_set = @ratings.empty? ? @all_ratings : @ratings
 
-    debugger
     @movies = Movie.all(:conditions => [
       "rating IN (:ratings)", {
-        #:ratings => @ratings ? @ratings : @all_ratings
         :ratings => rate_set
       }
     ],
